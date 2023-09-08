@@ -74,11 +74,63 @@ export default function Ball() {
   }
 
   function throwBall(event) {
-    console.log("Collision détectéess !");
+    console.log("Collision détectées !");
 
-    const randomNumber = Math.random() * 50 - 50;
-    ballRef.current.setLinvel({ x: 20, y: 20, z: 0 }, true);
-    console.log(ballRef.current.linvel());
+    // Obtenez la vitesse actuelle de la balle.
+    const currentVelocity = ballRef.current.linvel();
+    // const minYVelocity = 1; // Ajustez selon votre jeu
+    // if (Math.abs(currentVelocity.y) < minYVelocity) {
+    //   currentVelocity.y = minYVelocity * (currentVelocity.y < 0 ? -1 : 1);
+    // }
+    console.log(currentVelocity);
+
+    // Détectez quel objet a été touché.
+    const touchedObject = event.other.colliderObject.name;
+
+    switch (touchedObject) {
+      case "topBorder":
+        ballRef.current.setLinvel(
+          { x: currentVelocity.x, y: -currentVelocity.y, z: currentVelocity.z },
+          true
+        );
+        break;
+      case "leftBorder":
+      case "rightBorder":
+        ballRef.current.setLinvel(
+          { x: -currentVelocity.x, y: currentVelocity.y, z: currentVelocity.z },
+          true
+        );
+        break;
+      case "0paddle":
+        ballRef.current.setLinvel(
+          {
+            x: -Math.abs(currentVelocity.x),
+            y: -currentVelocity.y,
+            z: currentVelocity.z,
+          },
+          true
+        );
+        break;
+      case "1paddle":
+        ballRef.current.setLinvel(
+          { x: currentVelocity.x, y: -currentVelocity.y, z: currentVelocity.z },
+          true
+        );
+        break;
+      case "2paddle":
+        ballRef.current.setLinvel(
+          {
+            x: Math.abs(currentVelocity.x),
+            y: -currentVelocity.y,
+            z: currentVelocity.z,
+          },
+          true
+        );
+        break;
+      case "bottomBorder":
+        console.log("Perdu !");
+        break;
+    }
   }
 
   useEffect(() => {
@@ -95,7 +147,7 @@ export default function Ball() {
         friction={0.7}
         gravityScale={10}
         onCollisionEnter={throwBall}
-        linvel={[veloX, veloY, veloZ]}
+        lockRotations={true}
       >
         <mesh castShadow position={[0, 0, 0]}>
           <sphereGeometry />
