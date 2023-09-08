@@ -1,10 +1,31 @@
 import { RigidBody } from "@react-three/rapier";
-// importer THREE
+import { useControls } from "leva";
 import * as THREE from "three";
 
 import { useRef, useState, useEffect } from "react";
 export default function Ball() {
   const ballRef = useRef();
+
+  const { veloX, veloY, veloZ } = useControls({
+    veloX: {
+      value: 0,
+      min: -100,
+      max: 100,
+      step: 0.01,
+    },
+    veloY: {
+      value: 22.4,
+      min: -100,
+      max: 100,
+      step: 0.01,
+    },
+    veloZ: {
+      value: 0,
+      min: -100,
+      max: 100,
+      step: 0.01,
+    },
+  });
 
   function handleCollision(event) {
     console.log("Collision détectée !");
@@ -38,7 +59,7 @@ export default function Ball() {
 
   function startBall() {
     console.log("Throwing ball");
-    const impulseAmount = 50; // Ajustez cette valeur selon la force que vous voulez.
+    const impulseAmount = 100; // Ajustez cette valeur selon la force que vous voulez.
     ballRef.current.applyImpulse({
       x: impulseAmount,
       y: impulseAmount,
@@ -48,44 +69,21 @@ export default function Ball() {
     window.removeEventListener("click", startBall);
   }
 
+  function clickTest() {
+    console.log(ballRef.current.linvel());
+  }
+
   function throwBall(event) {
-    console.log("Collision détectée !");
-    console.log(event.other.colliderObject.name);
+    console.log("Collision détectéess !");
 
-    let normal;
-
-    // Supposons que la normale dépende de l'objet touché
-    switch (event.other.colliderObject.name) {
-      case "topBorder":
-        normal = new THREE.Vector3(0, -1, 0);
-        break;
-      case "bottomBorder":
-        normal = new THREE.Vector3(0, 1, 0);
-        break;
-      case "leftBorder":
-        normal = new THREE.Vector3(1, 0, 0);
-        break;
-      case "rightBorder":
-        normal = new THREE.Vector3(-1, 0, 0);
-        break;
-      default:
-        normal = new THREE.Vector3(0, 1, 0);
-    }
-
-    // Obtenez la vitesse actuelle de la balle (ne la normalisez pas cette fois)
-    const currentVelocity = ballRef.current.linvel.clone();
-
-    // Calculez la nouvelle vitesse reflétée
-    const reflectedVelocity = currentVelocity.sub(
-      normal.multiplyScalar(2 * currentVelocity.dot(normal))
-    );
-
-    // Appliquez l'impulsion à la balle
-    ballRef.current.applyImpulse(reflectedVelocity);
+    const randomNumber = Math.random() * 50 - 50;
+    ballRef.current.setLinvel({ x: 20, y: 20, z: 0 }, true);
+    console.log(ballRef.current.linvel());
   }
 
   useEffect(() => {
     window.addEventListener("click", startBall);
+    window.addEventListener("click", clickTest);
   }, []);
 
   return (
@@ -93,10 +91,11 @@ export default function Ball() {
       <RigidBody
         ref={ballRef}
         colliders="ball"
-        restitution={0}
+        restitution={1}
         friction={0.7}
         gravityScale={10}
         onCollisionEnter={throwBall}
+        linvel={[veloX, veloY, veloZ]}
       >
         <mesh castShadow position={[0, 0, 0]}>
           <sphereGeometry />

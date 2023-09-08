@@ -15,7 +15,7 @@ export default function Borders() {
       <RigidBody
         ref={topBorderRef}
         type="fixed"
-        restitution={0}
+        restitution={1}
         name={"topBorder"}
       >
         <mesh position={[0, 50, 0]}>
@@ -28,7 +28,7 @@ export default function Borders() {
       <RigidBody
         ref={rightBorderRef}
         type="fixed"
-        restitution={0}
+        restitution={1}
         name={"rightBorder"}
       >
         <mesh position={[50, 50, 0]}>
@@ -41,7 +41,7 @@ export default function Borders() {
       <RigidBody
         ref={topBorderRef}
         type="fixed"
-        restitution={0}
+        restitution={1}
         name={"bottomBorder"}
       >
         <mesh position={[0, -8, 0]}>
@@ -54,7 +54,7 @@ export default function Borders() {
       <RigidBody
         ref={rightBorderRef}
         type="fixed"
-        restitution={0}
+        restitution={1}
         name={"leftBorder"}
       >
         <mesh position={[-50, 50, 0]}>

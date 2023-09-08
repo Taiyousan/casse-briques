@@ -29,7 +29,7 @@ export default function Paddle({ direction }) {
         <RigidBody
           key={index}
           type="fixed"
-          restitution={0}
+          restitution={1}
           position={[
             position[0] - 5 + segmentWidth / 2 + index * segmentWidth,
             position[1],
