@@ -1,12 +1,14 @@
 import { useFrame } from "@react-three/fiber";
 import { useEffect, useState } from "react";
 import { RigidBody } from "@react-three/rapier";
+import useMouseControl from "../Controls/useMouseControls";
 import * as THREE from "three";
 
 export default function Paddle({ direction }) {
   const [position, setPosition] = useState([0, 0, 0]);
-  const paddleWidth = 10;
-  const segmentWidth = paddleWidth / 3;
+  const mousePosition = useMouseControl();
+  const paddleWidth = 11;
+  const segmentWidth = paddleWidth / 11;
 
   const randomColor = () =>
     new THREE.Color(Math.random(), Math.random(), Math.random());
@@ -17,16 +19,41 @@ export default function Paddle({ direction }) {
     color3: randomColor(),
   });
 
+  // useFrame(() => {
+  //   if (direction !== 0) {
+  //     setPosition((prev) => [prev[0] + direction * 0.5, prev[1], prev[2]]);
+  //   }
+
+  //   // console.log(mousePosition);
+  // });
+
   useFrame(() => {
-    if (direction !== 0) {
-      setPosition((prev) => [prev[0] + direction * 0.5, prev[1], prev[2]]);
+    if (mousePosition !== null) {
+      // Transformez mousePosition en une position relative par rapport à votre zone de jeu.
+      const gameWidth = 100; // Modifiez cette valeur selon votre configuration.
+      const relativePosition =
+        (mousePosition / window.innerWidth) * gameWidth - gameWidth / 2;
+
+      // Assurez-vous que le paddle reste à l'intérieur des limites
+      const halfPaddleWidth = paddleWidth / 2;
+      const clampedPosition = THREE.MathUtils.clamp(
+        relativePosition,
+        -gameWidth / 2 + halfPaddleWidth,
+        gameWidth / 2 - halfPaddleWidth
+      );
+
+      setPosition([clampedPosition, position[1], position[2]]);
     }
   });
+
+  useEffect(() => {
+    console.log("direction");
+  }, []);
 
   return (
     <>
       <group name={"paddle"}>
-        {[...Array(3)].map((_, index) => (
+        {[...Array(10)].map((_, index) => (
           <RigidBody
             key={index}
             type="fixed"
@@ -36,7 +63,7 @@ export default function Paddle({ direction }) {
               position[1],
               position[2],
             ]}
-            friction={0.7}
+            friction={0}
             name={`${index}paddle`}
           >
             <mesh receiveShadow position-y={-1.25}>

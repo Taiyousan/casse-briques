@@ -2,6 +2,23 @@ import { useState, useEffect } from "react";
 
 export const useKeyboardPaddleControls = () => {
   const [direction, setDirection] = useState(0); // -1 pour gauche, 1 pour droite, 0 pour arrêt
+  const [mousePosition, setMousePosition] = useState(null);
+
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      // setMousePosition(e.clientX);
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+    };
+  }, []);
+
+  useEffect(() => {
+    // console.log(mousePosition);
+  }, [mousePosition]);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -37,5 +54,5 @@ export const useKeyboardPaddleControls = () => {
     };
   }, []);
 
-  return direction;
+  return { direction, mousePosition };
 };

@@ -41,24 +41,37 @@ export default function Ball({ removeBrick }) {
     const touchedObjectParentName =
       event.other.colliderObject.parent.parent.name;
     if (touchedObjectParentName === "brick") {
+      let { x, y, z } = ballRef.current.linvel();
       setTimeout(() => {
+        // destroy brick
         const brickId =
           event.other.colliderObject.parent.parent.userData.brickId;
         removeBrick(brickId);
-      }, 100);
+
+        // change ball direction
+        const minX = 5;
+        if (x < minX && x > -minX) {
+          x = 1;
+        }
+        ballRef.current.setLinvel({
+          x: x,
+          y: y > 0 ? -30 : 30,
+          z: z,
+        });
+      }, 10);
     }
 
     // PADDLE
     if (touchedObjectParentName === "paddle") {
       setTimeout(() => {
         const { x, y, z } = ballRef.current.linvel();
+        console.log(touchedObject);
         switch (touchedObject) {
           case "0paddle":
-            console.log("okokok");
             ballRef.current.setLinvel(
               {
-                x: -30,
-                y: 30,
+                x: -50,
+                y: y,
                 z: z,
               },
               true
@@ -67,8 +80,8 @@ export default function Ball({ removeBrick }) {
           case "1paddle":
             ballRef.current.setLinvel(
               {
-                x: x,
-                y: 30,
+                x: -40,
+                y: y,
                 z: z,
               },
               true
@@ -77,8 +90,88 @@ export default function Ball({ removeBrick }) {
           case "2paddle":
             ballRef.current.setLinvel(
               {
+                x: -30,
+                y: y,
+                z: z,
+              },
+              true
+            );
+            break;
+          case "3paddle":
+            ballRef.current.setLinvel(
+              {
+                x: -20,
+                y: y,
+                z: z,
+              },
+              true
+            );
+            break;
+          case "4paddle":
+            ballRef.current.setLinvel(
+              {
+                x: -10,
+                y: y,
+                z: z,
+              },
+              true
+            );
+            break;
+          case "5paddle":
+            ballRef.current.setLinvel(
+              {
+                x: 0,
+                y: y,
+                z: z,
+              },
+              true
+            );
+            break;
+          case "6paddle":
+            ballRef.current.setLinvel(
+              {
+                x: 10,
+                y: y,
+                z: z,
+              },
+              true
+            );
+            break;
+          case "7paddle":
+            ballRef.current.setLinvel(
+              {
+                x: 20,
+                y: y,
+                z: z,
+              },
+              true
+            );
+            break;
+          case "8paddle":
+            ballRef.current.setLinvel(
+              {
                 x: 30,
-                y: 30,
+                y: y,
+                z: z,
+              },
+              true
+            );
+            break;
+          case "9paddle":
+            ballRef.current.setLinvel(
+              {
+                x: 40,
+                y: y,
+                z: z,
+              },
+              true
+            );
+            break;
+          case "10paddle":
+            ballRef.current.setLinvel(
+              {
+                x: 50,
+                y: y,
                 z: z,
               },
               true
@@ -137,7 +230,7 @@ export default function Ball({ removeBrick }) {
 
   function startBall() {
     console.log("Throwing ball");
-    const impulseAmount = 200; // Ajustez cette valeur selon la force que vous voulez.
+    const impulseAmount = 100; // Ajustez cette valeur selon la force que vous voulez.
     ballRef.current.applyImpulse({
       x: -impulseAmount,
       y: impulseAmount,
@@ -152,7 +245,6 @@ export default function Ball({ removeBrick }) {
   }
 
   useEffect(() => {
-    window.addEventListener("click", startBall);
     window.addEventListener("click", clickTest);
   }, []);
 
@@ -166,6 +258,7 @@ export default function Ball({ removeBrick }) {
         gravityScale={10}
         onCollisionEnter={handleCollision}
         lockRotations={true}
+        scale={[0.5, 0.5, 0.5]}
       >
         <mesh castShadow position={[0, 0, 0]} ref={ballMesh}>
           <sphereGeometry />

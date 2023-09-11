@@ -12,8 +12,8 @@ import Level1 from "./Meshes/Level/Level1";
 
 export default function Experience() {
   // const [position, setPosition] = useState([0, 0, 0]);
-  const levelsNumberOfBricks = [30];
-  const direction = useKeyboardPaddleControls();
+  const levelsNumberOfBricks = [70];
+  const { direction, mousePosition } = useKeyboardPaddleControls();
 
   const [bricks, setBricks] = useState(
     Array.from({ length: levelsNumberOfBricks[0] }, (_, index) => index + 1)
@@ -23,9 +23,9 @@ export default function Experience() {
     setBricks((prev) => prev.filter((brick) => brick !== id));
   };
 
-  // useEffect(() => {
-  //   removeBrick(1);
-  // }, []);
+  useEffect(() => {
+    console.log(mousePosition);
+  }, []);
 
   const { orbitLookAtX, orbitLookAtY, orbitLookAtZ } = useControls({
     orbitLookAtX: {
@@ -69,7 +69,7 @@ export default function Experience() {
         <Borders />
         <Ball removeBrick={removeBrick} />
 
-        <Paddle direction={direction} />
+        <Paddle direction={(direction, mousePosition)} />
       </Physics>
     </>
   );

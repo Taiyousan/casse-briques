@@ -8,17 +8,12 @@ export default function Borders({ position = [0, 0, 0], brickId }) {
   const bottomRight = useRef();
 
   // obtenir la largeur de l'écran
-  const brickWidth = 5;
+  const brickWidth = 2;
   const brickHeight = 1;
 
   return (
     <>
-      <group
-        position={position}
-        userData={{ brickId: brickId }}
-        name={"brick"}
-        onClick={() => onClick(id)}
-      >
+      <group position={position} userData={{ brickId: brickId }} name={"brick"}>
         {/* TOP-LEFT */}
         <RigidBody
           ref={topLeft}
@@ -34,7 +29,7 @@ export default function Borders({ position = [0, 0, 0], brickId }) {
         </RigidBody>
 
         {/* TOP-RIGHT */}
-        <RigidBody
+        {/* <RigidBody
           ref={topRight}
           type="fixed"
           friction={0}
@@ -48,7 +43,7 @@ export default function Borders({ position = [0, 0, 0], brickId }) {
         </RigidBody>
 
         {/* BOTTOM-LEFT */}
-        <RigidBody
+        {/* <RigidBody
           ref={bottomLeft}
           type="fixed"
           friction={0}
@@ -59,10 +54,10 @@ export default function Borders({ position = [0, 0, 0], brickId }) {
             <boxGeometry args={[brickWidth, brickHeight, 5]} />
             <meshStandardMaterial color="green" />
           </mesh>
-        </RigidBody>
+        </RigidBody> */}
 
         {/* BOTTOM-RIGHT */}
-        <RigidBody
+        {/* <RigidBody
           ref={bottomRight}
           type="fixed"
           friction={0}
@@ -73,7 +68,7 @@ export default function Borders({ position = [0, 0, 0], brickId }) {
             <boxGeometry args={[brickWidth, brickHeight, 5]} />
             <meshStandardMaterial color="yellow" />
           </mesh>
-        </RigidBody>
+        </RigidBody> */}
       </group>
     </>
   );
