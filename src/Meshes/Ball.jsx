@@ -1,67 +1,145 @@
 import { RigidBody } from "@react-three/rapier";
 import { useControls } from "leva";
-import * as THREE from "three";
 
 import { useRef, useState, useEffect } from "react";
 export default function Ball({ removeBrick }) {
   const ballRef = useRef();
+  const ballMesh = useRef();
 
   const { veloX, veloY, veloZ } = useControls({
     veloX: {
       value: 0,
-      min: -100,
-      max: 100,
+      min: -30,
+      max: 30,
       step: 0.01,
     },
     veloY: {
       value: 22.4,
-      min: -100,
-      max: 100,
+      min: -30,
+      max: 30,
       step: 0.01,
     },
     veloZ: {
       value: 0,
-      min: -100,
-      max: 100,
+      min: -30,
+      max: 30,
       step: 0.01,
     },
   });
 
-  function handleCollision(event) {
-    console.log("Collision détectée !");
-    console.log(event.other.colliderObject.name);
-    // const paddleTouched = event.other.colliderObject.name;
-    // const throwAngle = 100;
-    // if (paddleTouched === "0paddle") {
-    //   ballRef.current.applyTorqueImpulse({
-    //     x: 0,
-    //     y: 0,
-    //     z: throwAngle,
-    //   });
-    // } else if (paddleTouched === "1paddle") {
-    //   ballRef.current.applyTorqueImpulse({
-    //     x: 0,
-    //     y: 0,
-    //     z: 0,
-    //   });
-    // } else if (paddleTouched === "2paddle") {
-    //   ballRef.current.applyTorqueImpulse({
-    //     x: 0,
-    //     y: 0,
-    //     z: -throwAngle,
-    //   });
-    // }
+  useEffect(() => {
+    console.log(veloX, veloY, veloZ);
+    const { x, y, z } = ballRef.current.linvel();
+    console.log(x, y, z);
+    ballRef.current.setLinvel({ x: veloX, y: veloY, z: z }, true);
+  }, [veloX, veloY, veloZ]);
 
-    // setTimeout(() => {
-    //   ballRef.current.setAngvel(new THREE.Vector3(0, 0, 0));
-    // }, 100);
+  function handleCollision(event) {
+    // BRICKS
+
+    const touchedObject = event.other.colliderObject.name;
+    const touchedObjectParentName =
+      event.other.colliderObject.parent.parent.name;
+    if (touchedObjectParentName === "brick") {
+      setTimeout(() => {
+        const brickId =
+          event.other.colliderObject.parent.parent.userData.brickId;
+        removeBrick(brickId);
+      }, 100);
+    }
+
+    // PADDLE
+    if (touchedObjectParentName === "paddle") {
+      setTimeout(() => {
+        const { x, y, z } = ballRef.current.linvel();
+        switch (touchedObject) {
+          case "0paddle":
+            console.log("okokok");
+            ballRef.current.setLinvel(
+              {
+                x: -30,
+                y: 30,
+                z: z,
+              },
+              true
+            );
+            break;
+          case "1paddle":
+            ballRef.current.setLinvel(
+              {
+                x: x,
+                y: 30,
+                z: z,
+              },
+              true
+            );
+            break;
+          case "2paddle":
+            ballRef.current.setLinvel(
+              {
+                x: 30,
+                y: 30,
+                z: z,
+              },
+              true
+            );
+            break;
+        }
+      }, 10);
+    }
+
+    // BORDERS
+    if (touchedObjectParentName === "borders") {
+      let { x, y, z } = ballRef.current.linvel();
+      setTimeout(() => {
+        y = y >= 0 ? 30 : -30; // Force y à être soit 30, soit -30
+
+        switch (touchedObject) {
+          case "topBorder":
+            ballRef.current.setLinvel(
+              {
+                x: x > 0 ? x : -x,
+                y: y,
+                z: z,
+              },
+              true
+            );
+            break;
+          case "rightBorder":
+          case "leftBorder":
+            ballRef.current.setLinvel(
+              {
+                x: x,
+                y: y, // Pas besoin de condition ici, car y est déjà soit 30, soit -30
+                z: z,
+              },
+              true
+            );
+            break;
+          case "bottomBorder":
+            ballRef.current.setLinvel(
+              {
+                x: x > 0 ? x : -x,
+                y: y,
+                z: z,
+              },
+              true
+            );
+            break;
+        }
+      }, 10);
+    }
+
+    setTimeout(() => {
+      // console.log(ballRef.current.linvel());
+    }, 100);
   }
 
   function startBall() {
     console.log("Throwing ball");
-    const impulseAmount = 100; // Ajustez cette valeur selon la force que vous voulez.
+    const impulseAmount = 200; // Ajustez cette valeur selon la force que vous voulez.
     ballRef.current.applyImpulse({
-      x: impulseAmount,
+      x: -impulseAmount,
       y: impulseAmount,
       z: 0,
     });
@@ -70,127 +148,7 @@ export default function Ball({ removeBrick }) {
   }
 
   function clickTest() {
-    console.log(ballRef.current.linvel());
-  }
-
-  function throwBall(event) {
-    // console.log("Collision détectées !");
-    // Obtenez la vitesse actuelle de la balle.
-    const currentVelocity = ballRef.current.linvel();
-    // Détectez quel objet a été touché.
-    const touchedObject = event.other.colliderObject.name;
-    const touchedObjectParentName =
-      event.other.colliderObject.parent.parent.name;
-    console.log(touchedObject);
-    if (touchedObjectParentName === "borders") {
-      switch (touchedObject) {
-        case "topBorder":
-          ballRef.current.setLinvel(
-            {
-              x: currentVelocity.x,
-              y: -currentVelocity.y,
-              z: currentVelocity.z,
-            },
-            true
-          );
-          break;
-        case "leftBorder":
-        case "rightBorder":
-          ballRef.current.setLinvel(
-            {
-              x: -currentVelocity.x,
-              y: currentVelocity.y,
-              z: currentVelocity.z,
-            },
-            true
-          );
-          break;
-        case "bottomBorder":
-          console.log("Perdu !");
-          break;
-      }
-    } else if (touchedObjectParentName === "brick") {
-      setTimeout(() => {
-        const brickId =
-          event.other.colliderObject.parent.parent.userData.brickId;
-        removeBrick(brickId);
-      }, 100);
-      switch (touchedObject) {
-        case "topLeft":
-          ballRef.current.setLinvel(
-            {
-              x: currentVelocity.x,
-              y: -currentVelocity.y,
-              z: currentVelocity.z,
-            },
-            true
-          );
-          break;
-        case "topRight":
-          ballRef.current.setLinvel(
-            {
-              x: -currentVelocity.x,
-              y: -currentVelocity.y,
-              z: currentVelocity.z,
-            },
-            true
-          );
-          break;
-        case "bottomLeft":
-          ballRef.current.setLinvel(
-            {
-              x: currentVelocity.x,
-              y: -currentVelocity.y,
-              z: currentVelocity.z,
-            },
-            true
-          );
-          break;
-        case "bottomRight":
-          ballRef.current.setLinvel(
-            {
-              x: -currentVelocity.x,
-              y: -currentVelocity.y,
-              z: currentVelocity.z,
-            },
-            true
-          );
-          break;
-      }
-    } else if (touchedObjectParentName === "paddle") {
-      switch (touchedObject) {
-        case "0paddle":
-          ballRef.current.setLinvel(
-            {
-              x: -Math.abs(currentVelocity.x),
-              y: -currentVelocity.y,
-              z: currentVelocity.z,
-            },
-            true
-          );
-          break;
-        case "1paddle":
-          ballRef.current.setLinvel(
-            {
-              x: currentVelocity.x,
-              y: -currentVelocity.y,
-              z: currentVelocity.z,
-            },
-            true
-          );
-          break;
-        case "2paddle":
-          ballRef.current.setLinvel(
-            {
-              x: Math.abs(currentVelocity.x),
-              y: -currentVelocity.y,
-              z: currentVelocity.z,
-            },
-            true
-          );
-          break;
-      }
-    }
+    // console.log(ballRef.current.linvel());
   }
 
   useEffect(() => {
@@ -204,12 +162,12 @@ export default function Ball({ removeBrick }) {
         ref={ballRef}
         colliders="ball"
         restitution={1}
-        friction={0.7}
+        friction={0}
         gravityScale={10}
-        onCollisionEnter={throwBall}
+        onCollisionEnter={handleCollision}
         lockRotations={true}
       >
-        <mesh castShadow position={[0, 0, 0]}>
+        <mesh castShadow position={[0, 0, 0]} ref={ballMesh}>
           <sphereGeometry />
           <meshStandardMaterial color="orange" />
         </mesh>

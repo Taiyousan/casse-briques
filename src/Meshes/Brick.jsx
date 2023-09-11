@@ -20,7 +20,13 @@ export default function Borders({ position = [0, 0, 0], brickId }) {
         onClick={() => onClick(id)}
       >
         {/* TOP-LEFT */}
-        <RigidBody ref={topLeft} type="fixed" restitution={1} name={"topLeft"}>
+        <RigidBody
+          ref={topLeft}
+          type="fixed"
+          friction={0}
+          restitution={1}
+          name={"topLeft"}
+        >
           <mesh position={[0, brickHeight, 0]}>
             <boxGeometry args={[brickWidth, brickHeight, 5]} />
             <meshStandardMaterial color="blue" />
@@ -31,6 +37,7 @@ export default function Borders({ position = [0, 0, 0], brickId }) {
         <RigidBody
           ref={topRight}
           type="fixed"
+          friction={0}
           restitution={1}
           name={"topRight"}
         >
@@ -44,6 +51,7 @@ export default function Borders({ position = [0, 0, 0], brickId }) {
         <RigidBody
           ref={bottomLeft}
           type="fixed"
+          friction={0}
           restitution={1}
           name={"bottomLeft"}
         >
@@ -57,6 +65,7 @@ export default function Borders({ position = [0, 0, 0], brickId }) {
         <RigidBody
           ref={bottomRight}
           type="fixed"
+          friction={0}
           restitution={1}
           name={"bottomRight"}
         >
