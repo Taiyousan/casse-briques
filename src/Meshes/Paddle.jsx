@@ -25,25 +25,27 @@ export default function Paddle({ direction }) {
 
   return (
     <>
-      {[...Array(3)].map((_, index) => (
-        <RigidBody
-          key={index}
-          type="fixed"
-          restitution={1}
-          position={[
-            position[0] - 5 + segmentWidth / 2 + index * segmentWidth,
-            position[1],
-            position[2],
-          ]}
-          friction={0.7}
-          name={`${index}paddle`}
-        >
-          <mesh receiveShadow position-y={-1.25}>
-            <boxGeometry args={[segmentWidth, 0.5, 10]} />
-            <meshStandardMaterial color={colors[`color${index + 1}`]} />
-          </mesh>
-        </RigidBody>
-      ))}
+      <group name={"paddle"}>
+        {[...Array(3)].map((_, index) => (
+          <RigidBody
+            key={index}
+            type="fixed"
+            restitution={1}
+            position={[
+              position[0] - 5 + segmentWidth / 2 + index * segmentWidth,
+              position[1],
+              position[2],
+            ]}
+            friction={0.7}
+            name={`${index}paddle`}
+          >
+            <mesh receiveShadow position-y={-1.25}>
+              <boxGeometry args={[segmentWidth, 0.5, 10]} />
+              <meshStandardMaterial color={colors[`color${index + 1}`]} />
+            </mesh>
+          </RigidBody>
+        ))}
+      </group>
     </>
   );
 }

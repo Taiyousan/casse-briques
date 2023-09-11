@@ -5,13 +5,27 @@ import { useControls } from "leva";
 import Ball from "./Meshes/Ball";
 import Paddle from "./Meshes/Paddle";
 import Borders from "./Meshes/Borders";
+import Brick from "./Meshes/Brick";
 import { useKeyboardPaddleControls } from "./Controls/useKeyboardPaddleControls";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import Level1 from "./Meshes/Level/Level1";
 
 export default function Experience() {
   // const [position, setPosition] = useState([0, 0, 0]);
+  const levelsNumberOfBricks = [30];
   const direction = useKeyboardPaddleControls();
-  const ballRigidBodyRef = useRef();
+
+  const [bricks, setBricks] = useState(
+    Array.from({ length: levelsNumberOfBricks[0] }, (_, index) => index + 1)
+  );
+
+  const removeBrick = (id) => {
+    setBricks((prev) => prev.filter((brick) => brick !== id));
+  };
+
+  // useEffect(() => {
+  //   removeBrick(1);
+  // }, []);
 
   const { orbitLookAtX, orbitLookAtY, orbitLookAtZ } = useControls({
     orbitLookAtX: {
@@ -50,8 +64,11 @@ export default function Experience() {
       <ambientLight intensity={0.5} />
 
       <Physics debug gravity={[0, 0, 0]}>
+        <Level1 bricks={bricks} />
+
         <Borders />
-        <Ball />
+        <Ball removeBrick={removeBrick} />
+
         <Paddle direction={direction} />
       </Physics>
     </>
