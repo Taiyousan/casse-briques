@@ -5,7 +5,7 @@ import useMouseControl from "../Controls/useMouseControls";
 import * as THREE from "three";
 import { Html } from "@react-three/drei";
 
-export default function Paddle({ direction }) {
+export default function Paddle({ direction, isPaused, isStarted }) {
   const [position, setPosition] = useState([0, 0, 0]);
   const mousePosition = useMouseControl();
   const paddleWidth = 15;
@@ -29,7 +29,7 @@ export default function Paddle({ direction }) {
   // });
 
   useFrame(() => {
-    if (mousePosition !== null) {
+    if (mousePosition !== null && isStarted) {
       // Transformez mousePosition en une position relative par rapport à votre zone de jeu.
       const gameWidth = 100; // Modifiez cette valeur selon votre configuration.
       const relativePosition =
@@ -44,12 +44,10 @@ export default function Paddle({ direction }) {
       );
 
       setPosition([clampedPosition, position[1], position[2]]);
+    } else if (!isStarted) {
+      setPosition([0, 0, 0]);
     }
   });
-
-  useEffect(() => {
-    console.log("direction");
-  }, []);
 
   return (
     <>

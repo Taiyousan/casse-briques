@@ -1,5 +1,4 @@
 import { RigidBody } from "@react-three/rapier";
-import { usePause } from "../Utils/PauseContext";
 import { useRef, useState, useEffect } from "react";
 export default function Ball({
   removeBrick,
@@ -44,15 +43,14 @@ export default function Ball({
   // START BALL ---------------------------------------------------------------------
   function startBall() {
     console.log("Throwing ball");
-    setIsPaused(true);
-    setIsPaused(false);
+    ballRef.current.wakeUp();
     const impulseAmount = 10; // Ajustez cette valeur selon la force que vous voulez.
-    // ballRef.current.applyImpulse({
-    //   x: -impulseAmount,
-    //   y: impulseAmount,
-    //   z: 0,
-    // });
-    ballRef.current.setLinvel({ x: -impulseAmount, y: impulseAmount, z: 0 });
+    ballRef.current.applyImpulse({
+      x: -impulseAmount,
+      y: impulseAmount,
+      z: 0,
+    });
+    // ballRef.current.setLinvel({ x: -impulseAmount, y: impulseAmount, z: 0 });
   }
 
   useEffect(() => {
@@ -235,6 +233,7 @@ export default function Ball({
 
     // BORDERS
     if (touchedObjectParentName === "borders") {
+      setIsCombo(false);
       let { x, y, z } = ballRef.current.linvel();
       setTimeout(() => {
         y = y >= 0 ? 30 : -30; // Force y à être soit 30, soit -30

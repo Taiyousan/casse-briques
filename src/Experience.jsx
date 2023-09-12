@@ -8,7 +8,7 @@ import Paddle from "./Meshes/Paddle";
 import Borders from "./Meshes/Borders";
 import Brick from "./Meshes/Brick";
 import { useKeyboardPaddleControls } from "./Controls/useKeyboardPaddleControls";
-import { usePause, PauseButton } from "./Utils/PauseContext";
+import PauseButton from "./Utils/PauseContext";
 import ScoreDisplay from "./Utils/ScoreDisplay";
 import LifeDisplay from "./Utils/LifeDisplay";
 import StartButton from "./Utils/StartButton";
@@ -61,7 +61,7 @@ export default function Experience() {
       <ambientLight intensity={0.5} />
       <Physics debug gravity={[0, 0, 0]}>
         <Level1 bricks={bricks} />
-        <PauseButton />
+        <PauseButton isPaused={isPaused} setIsPaused={setIsPaused} />
         <Borders />
         {!isStarted && (
           <StartButton
@@ -83,7 +83,11 @@ export default function Experience() {
         />
         <ScoreDisplay score={score} isCombo={isCombo} />
         <LifeDisplay lifeCount={lifeCount} />
-        <Paddle direction={(direction, mousePosition)} />
+        <Paddle
+          direction={(direction, mousePosition)}
+          isPaused={isPaused}
+          isStarted={isStarted}
+        />
       </Physics>
     </>
   );

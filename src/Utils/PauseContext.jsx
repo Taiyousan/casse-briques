@@ -2,28 +2,7 @@ import React, { createContext, useContext, useState } from "react";
 import { Html } from "@react-three/drei";
 import styles from "./PauseButton.module.css";
 
-const PauseContext = createContext();
-
-export const usePause = () => {
-  return useContext(PauseContext);
-};
-
-export const PauseProvider = ({ children }) => {
-  const [isPaused, setIsPaused] = useState(false);
-
-  const value = {
-    isPaused,
-    setIsPaused,
-  };
-
-  return (
-    <PauseContext.Provider value={value}>{children}</PauseContext.Provider>
-  );
-};
-
-export const PauseButton = () => {
-  const { isPaused, setIsPaused } = usePause();
-
+export default function PauseButton({ isPaused, setIsPaused }) {
   return (
     <Html className="pause-button-wrapper" position={[0, 50, 0]}>
       <label
@@ -52,4 +31,4 @@ export const PauseButton = () => {
       </label>
     </Html>
   );
-};
+}
