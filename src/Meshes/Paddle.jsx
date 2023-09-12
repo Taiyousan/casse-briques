@@ -3,11 +3,12 @@ import { useEffect, useState } from "react";
 import { RigidBody } from "@react-three/rapier";
 import useMouseControl from "../Controls/useMouseControls";
 import * as THREE from "three";
+import { Html } from "@react-three/drei";
 
 export default function Paddle({ direction }) {
   const [position, setPosition] = useState([0, 0, 0]);
   const mousePosition = useMouseControl();
-  const paddleWidth = 11;
+  const paddleWidth = 15;
   const segmentWidth = paddleWidth / 11;
 
   const randomColor = () =>
@@ -66,6 +67,7 @@ export default function Paddle({ direction }) {
             friction={0}
             name={`${index}paddle`}
           >
+            <Html>{`${index}`}</Html>
             <mesh receiveShadow position-y={-1.25}>
               <boxGeometry args={[segmentWidth, 0.5, 10]} />
               <meshStandardMaterial color={colors[`color${index + 1}`]} />

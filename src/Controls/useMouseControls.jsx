@@ -11,6 +11,7 @@ const useMouseControl = () => {
     window.addEventListener("mousemove", handleMouseMove);
 
     return () => {
+      // Retirez l'écouteur d'événements dans la fonction de nettoyage
       window.removeEventListener("mousemove", handleMouseMove);
     };
   }, []);

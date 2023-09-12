@@ -1,39 +1,90 @@
 import { RigidBody } from "@react-three/rapier";
-import { useControls } from "leva";
-
+import { usePause } from "../Utils/PauseContext";
 import { useRef, useState, useEffect } from "react";
-export default function Ball({ removeBrick }) {
+export default function Ball({
+  removeBrick,
+  setIsCombo,
+  lifeCount,
+  setLifeCount,
+  isStarted,
+  setIsStarted,
+  isPaused,
+  setIsPaused,
+}) {
   const ballRef = useRef();
   const ballMesh = useRef();
+  // const isStartedRef = useRef(isStarted);
+  // const { isPaused } = usePause();
 
-  const { veloX, veloY, veloZ } = useControls({
-    veloX: {
-      value: 0,
-      min: -30,
-      max: 30,
-      step: 0.01,
-    },
-    veloY: {
-      value: 22.4,
-      min: -30,
-      max: 30,
-      step: 0.01,
-    },
-    veloZ: {
-      value: 0,
-      min: -30,
-      max: 30,
-      step: 0.01,
-    },
-  });
+  const veloX = 0;
+  const veloY = 22.4;
+  const veloZ = 0;
+
+  const [ballPosition, setBallPosition] = useState([0, 0, 0]);
+  const [isBall, setIsBall] = useState(true);
+
+  // PAUSE ----------------------------------------------------------------------
+  const [lastVelocity, setLastVelocity] = useState({ x: 0, y: 0, z: 0 });
 
   useEffect(() => {
-    console.log(veloX, veloY, veloZ);
-    const { x, y, z } = ballRef.current.linvel();
-    console.log(x, y, z);
-    ballRef.current.setLinvel({ x: veloX, y: veloY, z: z }, true);
-  }, [veloX, veloY, veloZ]);
+    if (isPaused) {
+      // Enregistrez la vitesse actuelle de la balle pour pouvoir la restaurer plus tard
+      const currentVelocity = ballRef.current.linvel();
+      setLastVelocity(currentVelocity);
 
+      // Définissez la vitesse de la balle à 0 pour la "geler"
+      ballRef.current.setLinvel({ x: 0, y: 0, z: 0 }, true);
+    } else if (!isPaused && isStarted) {
+      // Restaurez la vitesse précédente de la balle lorsque le jeu est repris
+      ballRef.current.setLinvel(lastVelocity, true);
+    }
+  }, [isPaused]);
+  //--------------------------------------------------------------------------------
+
+  // START BALL ---------------------------------------------------------------------
+  function startBall() {
+    console.log("Throwing ball");
+    setIsPaused(true);
+    setIsPaused(false);
+    const impulseAmount = 10; // Ajustez cette valeur selon la force que vous voulez.
+    // ballRef.current.applyImpulse({
+    //   x: -impulseAmount,
+    //   y: impulseAmount,
+    //   z: 0,
+    // });
+    ballRef.current.setLinvel({ x: -impulseAmount, y: impulseAmount, z: 0 });
+  }
+
+  useEffect(() => {
+    console.log("isStarted", isStarted);
+    if (isStarted) {
+      startBall();
+    }
+  }, [isStarted]);
+  //  --------------------------------------------------------------------------------
+
+  // GAME OVER ---------------------------------------------------------------------
+  const handleGameOver = () => {
+    console.log("Game Over");
+    ballRef.current.setLinvel({ x: 0, y: 0, z: 0 }, true);
+    setIsBall(false);
+    setTimeout(() => {
+      setIsBall(true);
+      setIsStarted(false);
+    }, 1000);
+  };
+  // --------------------------------------------------------------------------------
+
+  // ?? ---------------------------------------------------------------------
+  // useEffect(() => {
+  //   console.log(veloX, veloY, veloZ);
+  //   const { x, y, z } = ballRef.current.linvel();
+  //   console.log(x, y, z);
+  //   ballRef.current.setLinvel({ x: veloX, y: veloY, z: z }, true);
+  // }, [veloX, veloY, veloZ]);
+  // --------------------------------------------------------------------------------
+
+  // COLLISIONS ---------------------------------------------------------------------
   function handleCollision(event) {
     // BRICKS
 
@@ -179,6 +230,7 @@ export default function Ball({ removeBrick }) {
             break;
         }
       }, 10);
+      setIsCombo(false);
     }
 
     // BORDERS
@@ -212,59 +264,46 @@ export default function Ball({ removeBrick }) {
           case "bottomBorder":
             ballRef.current.setLinvel(
               {
-                x: x > 0 ? x : -x,
-                y: y,
-                z: z,
+                x: 0,
+                y: 0,
+                z: 0,
               },
               true
             );
+            setLifeCount((prev) => prev - 1);
+            handleGameOver();
             break;
         }
       }, 10);
     }
-
-    setTimeout(() => {
-      // console.log(ballRef.current.linvel());
-    }, 100);
   }
+  // --------------------------------------------------------------------------------
 
-  function startBall() {
-    console.log("Throwing ball");
-    const impulseAmount = 100; // Ajustez cette valeur selon la force que vous voulez.
-    ballRef.current.applyImpulse({
-      x: -impulseAmount,
-      y: impulseAmount,
-      z: 0,
-    });
-
-    window.removeEventListener("click", startBall);
-  }
-
-  function clickTest() {
-    // console.log(ballRef.current.linvel());
-  }
-
+  // TEST STATES
   useEffect(() => {
-    window.addEventListener("click", clickTest);
-  }, []);
+    console.log("BALL : isPaused", isPaused);
+  }, [isPaused]);
+  //---------------------------------------------------------------------
 
   return (
     <>
-      <RigidBody
-        ref={ballRef}
-        colliders="ball"
-        restitution={1}
-        friction={0}
-        gravityScale={10}
-        onCollisionEnter={handleCollision}
-        lockRotations={true}
-        scale={[0.5, 0.5, 0.5]}
-      >
-        <mesh castShadow position={[0, 0, 0]} ref={ballMesh}>
-          <sphereGeometry />
-          <meshStandardMaterial color="orange" />
-        </mesh>
-      </RigidBody>
+      {isBall && (
+        <RigidBody
+          ref={ballRef}
+          colliders="ball"
+          restitution={1}
+          friction={0}
+          gravityScale={10}
+          onCollisionEnter={handleCollision}
+          lockRotations={true}
+          scale={[0.5, 0.5, 0.5]}
+        >
+          <mesh castShadow position={ballPosition} ref={ballMesh}>
+            <sphereGeometry />
+            <meshStandardMaterial color="orange" />
+          </mesh>
+        </RigidBody>
+      )}
     </>
   );
 }

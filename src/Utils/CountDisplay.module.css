@@ -1,0 +1,31 @@
+.countDisplay {
+    background-color: #252525;
+    width: 3em;
+    height: 3em;
+    border-radius: 50%;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    color: white;
+}
+
+.combo {
+    background-color: #2da931;
+    width: 3em;
+    height: 3em;
+    border-radius: 50%;
+
+    position: absolute;
+    right: 0;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.comboTexte {
+    color: white;
+    font-size: large;
+}
